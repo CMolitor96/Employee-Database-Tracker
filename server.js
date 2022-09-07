@@ -50,6 +50,8 @@ function viewTables(response) {
         addDepartment();
     } else if (response.choice === 'Add a Role') {
         addRole();
+    } else if (response.choice === 'Add an Employee') {
+        addEmployee();
     }
 };
 
@@ -106,7 +108,64 @@ async function addRole() {
     initialQuestion();
 }
 
-
+async function addEmployee() {
+    let departmentArray = [];
+    let departmentObjectArray = [];
+    db.query(`SELECT * FROM department`, (err, results) => {
+        console.log(results);
+        for (i = 0; i < results.length; i++) {
+            departmentArray.push(results[i].department_name);
+            departmentObjectArray.push(results[i]);
+        }
+    });
+    let employeeArray = [];
+    let managerArray = [];
+    db.query(`SELECT * FROM employee`, (err, results) => {
+        console.log(results);
+        for (i = 0; i < results.length; i++) {
+            employeeArray.push(results[i].manager_name);
+        }
+        employeeArray.forEach(name => {
+            if (!managerArray.includes(name)) {
+                managerArray.push(name);
+            }
+        })
+    });
+    // console.log(managerArray);
+    await inquirer.prompt([
+        {
+            type: 'input',
+            message: "What is the employee's first name? ",
+            name: 'first_name',
+        },
+        {
+            type: 'input',
+            message: "What is the employee's last name? ",
+            name: 'last_name',
+        },
+        {
+            type: 'list',
+            message: "What is the employee's role? ",
+            choices: departmentArray,
+            name: 'roleDepartment',
+        },
+        {
+            type: 'list',
+            message: "Who is the employee's manager? ",
+            choices: managerArray,
+            name: 'manager',
+        }
+    ]).then(response => {
+        // console.log(departmentArray);
+        // console.log(departmentObjectArray);
+            console.log(employeeArray);
+            console.log(managerArray);
+            console.log(response.first_name);
+            console.log(response.last_name);
+            console.log(response.roleDepartment);
+            console.log(response.manager);
+    });
+}
 
 
 
