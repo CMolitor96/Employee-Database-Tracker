@@ -101,7 +101,7 @@ async function addRole() {
         // console.log(roleId);
         // console.log(response.roleName);
         // console.log(response.salaryRole);
-        db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ${response.salaryRole}, ${roleId})`, response.roleName, (err, res) => { console.log(err);});
+        db.query(`INSERT INTO role (title, salary, department_name, department_id) VALUES (?, ${response.salaryRole}, ${JSON.stringify(response.roleDepartment)}, ${roleId})`, response.roleName, (err, res) => { console.log(err);});
     });
     initialQuestion();
 }
