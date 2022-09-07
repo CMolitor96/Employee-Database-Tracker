@@ -63,9 +63,11 @@ async function addDepartment() {
 
 async function addRole() {
     let departmentArray = [];
-    db.query(`SELECT department_name FROM department`, (err, results) => {
+    let departmentObjectArray = [];
+    db.query(`SELECT * FROM department`, (err, results) => {
         for (i = 0; i < results.length; i++) {
-            departmentArray.push(results[i].department_name)
+            departmentArray.push(results[i].department_name);
+            departmentObjectArray.push(results[i]);
         }
     });
     await inquirer.prompt([
@@ -83,10 +85,23 @@ async function addRole() {
             type: 'list',
             message: 'Deparatment in which role belongs: ',
             name: 'roleDepartment',
-            choices: departmentArray
+            choices: departmentArray,
         }
     ]).then(response => {
-        console.log(response.roleName, response.salaryRole, response.roleDepartment);
+        console.log('Role Successfully Added');
+        // console.log(departmentObjectArray);
+        // console.log(response.roleDepartment)
+        // console.log(departmentObjectArray[0].department_name);
+        let roleId;
+        for (i = 0; i < departmentObjectArray.length; i ++) {
+            if (departmentObjectArray[i].department_name === response.roleDepartment) {
+                roleId = departmentObjectArray[i].id;
+            }
+        }
+        // console.log(roleId);
+        // console.log(response.roleName);
+        // console.log(response.salaryRole);
+        db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ${response.salaryRole}, ${roleId})`, response.roleName, (err, res) => { console.log(err);});
     });
     initialQuestion();
 }
