@@ -24,7 +24,7 @@ const initialQuestions = [
 function initialQuestion() {
     inquirer.prompt(initialQuestions).then(response => { viewTables(response) })
 }
-// initialQuestion();
+initialQuestion();
 
 function viewTables(response) {
     if (response.choice === 'View All Departments') {
@@ -206,98 +206,202 @@ async function addEmployee() {
 }
 
 // async function updateEmployee() {
-//     let allEmployeeArray = [];
-//     let goose;
-//     db.query(`SELECT * FROM employee`, (err, results) => {
-//         // console.log(results);
+//     // let goose = [];
+//     let employee = new Promise((resolve, reject) => {
+//         db.query(`SELECT * FROM employee`, (err, results) => {
+//             resolve(results);
+//         });
+//     });
+//     employee.then((results) => {
+//         console.log(results);
+//         let goose = [];
 //         for (i = 0; i < results.length; i++) {
-//             let first_name = results[i].first_name;
-//             let last_name = results[i].last_name;
-//             let full_name = first_name + ' ' + last_name;
-//             allEmployeeArray.push(full_name);
+//             goose.push(results[i].title);
 //         }
-//         goose = allEmployeeArray;
+//         return goose;
 //     });
-//     console.log(goose);
+// console.log(goose);
+// let allEmployeeArray = [];
+// let goose;
+// db.query(`SELECT * FROM employee`, (err, results) => {
+//     // console.log(results);
+//     for (i = 0; i < results.length; i++) {
+//         let first_name = results[i].first_name;
+//         let last_name = results[i].last_name;
+//         let full_name = first_name + ' ' + last_name;
+//         allEmployeeArray.push(full_name);
+//     }
+//     // console.log(allEmployeeArray);
+// });
+// // console.log(goose);
 
-//     let roleArray = [];
+// let roleArray = [];
 
-//     db.query(`SELECT * FROM role`, (err, results) => {
-//         // console.log(results);
-//         for (i = 0; i < results.length; i++) {
-//             roleArray.push(results[i].title);
-//         }
-//         // console.log(roleArray);
-//     });
-//     console.log(managerArray);
+// db.query(`SELECT * FROM role`, (err, results) => {
+//     // console.log(results);
+//     for (i = 0; i < results.length; i++) {
+//         roleArray.push(results[i].title);
+//     }
+//     // console.log(roleArray);
+// });
+// console.log(managerArray);
+// const departmentArray = await addEmplyeeArray()
+// await inquirer.prompt([
+//     {
+//         type: 'list',
+//         message: "Which employee's role do you want to update? ",
+//         choices: departmentArray,
+//         name: 'employee',
+//     },
+//     {
+//         type: 'list',
+//         message: "Which role do you want to assign the selected employee? ",
+//         choices: [1, 2, 3],
+//         name: 'role',
+//     },
+// ]).then(response => {
+//     console.log(response.employee);
+//     console.log(response.role);
 
-//     await inquirer.prompt([
-//         {
-//             type: 'list',
-//             message: "Which employee's role do you want to update? ",
-//             choices: departmentArray,
-//             name: 'employee',
-//         },
-//         {
-//             type: 'list',
-//             message: "Which role do you want to assign the selected employee? ",
-//             choices: departmentArray,
-//             name: 'role',
-//         },
-//     ]).then(response => {
-//         console.log(response.employee);
-//         console.log(response.role);
+//     // db.query(`Update employee Set title = salary = department_name = department_id = WHERE id = `, (err, result) => {
 
-//         // db.query(`Update employee Set title = salary = department_name = department_id = WHERE id = `, (err, result) => {
+//     // });
+// });
+// initialQuestion();
+// }
+// updateEmployee();
 
-//         // });
-//     });
-//     // initialQuestion();
+async function query(string) {
+    return new Promise((resolve, reject) => {
+        db.query(string, (err, results) => {
+            resolve(results)
+        });
+    });
+}
+
+// async function whatever() {
+//     const employees = await queryEmployees();
+//     const departments = await queryDepartments();
+//     await prompt
 // }
 
-function allEmployeeArray() {
-    let allEmployeeArray = [];
-    db.query(`SELECT * FROM employee`, (err, results) => {
-        // console.log(results);
-        for (i = 0; i < results.length; i++) {
-            let first_name = results[i].first_name;
-            let last_name = results[i].last_name;
-            let full_name = first_name + ' ' + last_name;
-            allEmployeeArray.push(full_name);
-        }
-    });
-    return allEmployeeArray;
-}
-
-let roleArray = [];
-db.query(`SELECT * FROM role`, (err, results) => {
+async function updateEmployee() {
+    const results = await query(`SELECT * FROM employee`);
+    let employeeNameArray = [];
+    let employeeArray = [];
+    let first_name;
+    let last_name;
     for (i = 0; i < results.length; i++) {
-        roleArray.push(results[i].title);
+        first_name = results[i].first_name;
+        last_name = results[i].last_name;
+        let full_name = first_name + ' ' + last_name;
+        employeeNameArray.push(full_name);
+        employeeArray.push(results[i]);
     }
+
+    const roles = await query(`SELECT * FROM role`);
+    let roleArray = [];
+    let allRoleArray = [];
+    for (i = 0; i < roles.length; i++) {
+        roleArray.push(roles[i].title);
+        allRoleArray.push(roles[i]);
+    }
+    // console.log(employeeArray);
     // console.log(roleArray);
-});
-// console.log(roleArray);
-
-let departmentArray = [];
-let departmentObjectArray = [];
-db.query(`SELECT * FROM role`, (err, results) => {
-    // console.log(results);
-    for (i = 0; i < results.length; i++) {
-        departmentArray.push(results[i].title);
-        departmentObjectArray.push(results[i]);
-    }
-    // console.log(departmentArray);
-});
-// console.log(departmentArray);
-let testingArray = [];
-async function testing() {
-    // let testingArray = [];
-    db.query(`SELECT * FROM department`, (err, results) => {
-        for (i = 0; i < results.length; i++) {
-            testingArray.push(results[i].department_name);
+    await inquirer.prompt([
+        {
+            type: 'list',
+            message: "Which employee's role do you want to update? ",
+            choices: employeeNameArray,
+            name: 'employee',
+        },
+        {
+            type: 'list',
+            message: "Which role do you want to assign the selected employee? ",
+            choices: roleArray,
+            name: 'role',
+        },
+    ]).then(response => {
+        // console.log(response.employee);
+        // console.log(response.role);
+        // console.log(employeeArray);
+        let splitName = response.employee.split(' ');
+        let splitName1 = splitName[0];
+        let splitName2 = splitName[1];
+        // console.log(splitName1);
+        // console.log(splitName2);
+        let employeeId;
+        for (i = 0; i < employeeArray.length; i++) {
+            if (employeeArray[i].first_name === splitName1 && employeeArray[i].last_name === splitName2) {
+                employeeId = employeeArray[i].id;
+            }
         }
-        return testingArray;
+        // console.log(employeeId);
+        // console.log(allRoleArray);
+        let depName;
+        // let depId;
+        let salary;
+        let roleId;
+        for (i = 0; i < allRoleArray.length; i++) {
+            if (response.role === allRoleArray[i].title) {
+                depName = allRoleArray[i].department_name;
+                // depId = allRoleArray[i].department_id;
+                salary = allRoleArray[i].salary;
+                roleId = allRoleArray[i].id;
+            }
+        }
+        //title = response.role, salary = salary, department_name = depName, department_id = depId, id = employeeId
+        console.log(`New employee Update: ${JSON.stringify(response.role)}, ${salary}, ${roleId}, ${JSON.stringify(depName)}, ${employeeId}`);
+
+        db.query(`UPDATE employee SET title = ${JSON.stringify(response.role)}, salary = ${salary}, role_id = ${roleId}, department = ${JSON.stringify(depName)} WHERE id = ${employeeId};`, (err, result) => {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log(`${splitName1} ${splitName2} has been successfully updated`)
+            }
+
+        });
     });
+    initialQuestion();
 }
-const goose = testing();
-console.log(goose);
+// allEmployeeArray();
+
+// (async function () {
+//     var goose = await allEmployeeArray();
+//     console.log(goose);
+// })();
+
+
+// let roleArray = [];
+// db.query(`SELECT * FROM role`, (err, results) => {
+//     for (i = 0; i < results.length; i++) {
+//         roleArray.push(results[i].title);
+//     }
+//     // console.log(roleArray);
+// });
+// // console.log(roleArray);
+
+// let departmentArray = [];
+// let departmentObjectArray = [];
+// db.query(`SELECT * FROM role`, (err, results) => {
+//     // console.log(results);
+//     for (i = 0; i < results.length; i++) {
+//         departmentArray.push(results[i].title);
+//         departmentObjectArray.push(results[i]);
+//     }
+//     // console.log(departmentArray);
+// });
+// console.log(departmentArray);
+// let testingArray = [];
+// async function testing() {
+//     // let testingArray = [];
+//     db.query(`SELECT * FROM department`, (err, results) => {
+//         for (i = 0; i < results.length; i++) {
+//             testingArray.push(results[i].department_name);
+//         }
+//         return testingArray;
+//     });
+// }
+// const goose = testing();
+// console.log(goose);
+// updateEmployee();

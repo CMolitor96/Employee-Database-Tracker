@@ -25,3 +25,5 @@ INSERT INTO employee (first_name, last_name, title, salary, role_id, department,
 INSERT INTO employee (first_name, last_name, title, salary, role_id, department, manager_name, manager_id) VALUES ('Jason', 'Statham', 'Senior Lawyer', 70000, 1007, 'Legal', 'Arnold Schwartz', 2006);
 INSERT INTO employee (first_name, last_name, title, salary, role_id, department, manager_name, manager_id) VALUES ('Jet', 'Li', 'Operations Manager' , 50000, 1008, 'Customer Service', 'Jet Li', NULL);
 INSERT INTO employee (first_name, last_name, title, salary, role_id, department, manager_name, manager_id) VALUES ('Chris', 'Pine', 'Service Representative' , 20000, 1009, 'Customer Service', 'Jet Li', 2008);
+
+-- UPDATE employee SET title = 'Money Manager', salary = 80000, role_id = 1004, department = 'Finance' WHERE id = 2000;
