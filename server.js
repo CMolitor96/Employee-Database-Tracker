@@ -95,7 +95,7 @@ async function addRole() {
         // console.log(response.roleDepartment)
         // console.log(departmentObjectArray[0].department_name);
         let roleId;
-        for (i = 0; i < departmentObjectArray.length; i ++) {
+        for (i = 0; i < departmentObjectArray.length; i++) {
             if (departmentObjectArray[i].department_name === response.roleDepartment) {
                 roleId = departmentObjectArray[i].id;
             }
@@ -103,7 +103,7 @@ async function addRole() {
         // console.log(roleId);
         // console.log(response.roleName);
         // console.log(response.salaryRole);
-        db.query(`INSERT INTO role (title, salary, department_name, department_id) VALUES (?, ${response.salaryRole}, ${JSON.stringify(response.roleDepartment)}, ${roleId})`, response.roleName, (err, res) => { console.log(err);});
+        db.query(`INSERT INTO role (title, salary, department_name, department_id) VALUES (?, ${response.salaryRole}, ${JSON.stringify(response.roleDepartment)}, ${roleId})`, response.roleName, (err, res) => { console.log(err); });
     });
     initialQuestion();
 }
@@ -111,25 +111,40 @@ async function addRole() {
 async function addEmployee() {
     let departmentArray = [];
     let departmentObjectArray = [];
-    db.query(`SELECT * FROM department`, (err, results) => {
-        console.log(results);
+    db.query(`SELECT * FROM role`, (err, results) => {
+        // console.log(results);
         for (i = 0; i < results.length; i++) {
-            departmentArray.push(results[i].department_name);
+            departmentArray.push(results[i].title);
             departmentObjectArray.push(results[i]);
         }
     });
     let employeeArray = [];
-    let managerArray = [];
+    let managerArray = ['None'];
+    let employeeObjectArray = [];
+    let employeeObjectArraySimple;
+    // let employeeObjectArraySimple2 = [];
     db.query(`SELECT * FROM employee`, (err, results) => {
-        console.log(results);
+        // console.log(results);
         for (i = 0; i < results.length; i++) {
             employeeArray.push(results[i].manager_name);
+            employeeObjectArray.push(results);
+            employeeObjectArraySimple = results;
         }
         employeeArray.forEach(name => {
             if (!managerArray.includes(name)) {
                 managerArray.push(name);
             }
         })
+        employeeObjectArray.forEach(element => {
+            if (!employeeObjectArraySimple.includes(element)) {
+                employeeObjectArraySimple.push(element);
+            }
+        })
+        // employeeObjectArraySimple.forEach(element => {
+        //     if (!employeeObjectArraySimple2.includes(element)) {
+        //         employeeObjectArraySimple2.push(element);
+        //     }
+        // })
     });
     // console.log(managerArray);
     await inquirer.prompt([
@@ -157,14 +172,44 @@ async function addEmployee() {
         }
     ]).then(response => {
         // console.log(departmentArray);
+        let roleId;
+        let salary;
+        let title;
+        let department;
+        for (i = 0; i < departmentObjectArray.length; i++) {
+            if (departmentObjectArray[i].title === response.roleDepartment) {
+                roleId = departmentObjectArray[i].id;
+                salary = departmentObjectArray[i].salary;
+                title = departmentObjectArray[i].title;
+                department = departmentObjectArray[i].department_name;
+            }
+        }
+        let manager_id;
+        if (response.manager === 'None') {
+            response.manager = `${response.first_name} ${response.last_name}`;
+            manager_id = null;
+        } else if (response.manager != 'None') {
+            for (i = 0; i < employeeObjectArraySimple.length; i++) {
+                if (employeeObjectArraySimple[i].manager_name === response.manager) {
+                    manager_id = employeeObjectArraySimple[i].id - 1;
+                }
+            }
+        }
+        // console.log(employeeObjectArray);
+        // console.log(manager_id);
+        // console.log(response.manager);
         // console.log(departmentObjectArray);
-            console.log(employeeArray);
-            console.log(managerArray);
-            console.log(response.first_name);
-            console.log(response.last_name);
-            console.log(response.roleDepartment);
-            console.log(response.manager);
+        // // console.log(roleId);
+        // console.log('title');
+        // console.log('salary');
+        // console.log('department');
+        // console.log(employeeObjectArraySimple);
+        // console.log(roleId);
+        db.query(`INSERT INTO employee (first_name, last_name, title, salary, role_id, department, manager_name, manager_id) VALUES (?, ${JSON.stringify(response.last_name)}, ${JSON.stringify(title)}, ${salary}, ${roleId}, ${JSON.stringify(department)}, ${JSON.stringify(response.manager)}, ${manager_id})`, response.first_name, (err, result) => {
+            console.log(err);
+        })
     });
+    initialQuestion();
 }
 
 
