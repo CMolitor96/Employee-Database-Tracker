@@ -274,8 +274,9 @@ db.query(`SELECT * FROM role`, (err, results) => {
     for (i = 0; i < results.length; i++) {
         roleArray.push(results[i].title);
     }
+    // console.log(roleArray);
 });
-console.log(roleArray);
+// console.log(roleArray);
 
 let departmentArray = [];
 let departmentObjectArray = [];
@@ -285,5 +286,18 @@ db.query(`SELECT * FROM role`, (err, results) => {
         departmentArray.push(results[i].title);
         departmentObjectArray.push(results[i]);
     }
+    // console.log(departmentArray);
 });
-console.log(departmentArray);
+// console.log(departmentArray);
+let testingArray = [];
+async function testing() {
+    // let testingArray = [];
+    db.query(`SELECT * FROM department`, (err, results) => {
+        for (i = 0; i < results.length; i++) {
+            testingArray.push(results[i].department_name);
+        }
+        return testingArray;
+    });
+}
+const goose = testing();
+console.log(goose);
