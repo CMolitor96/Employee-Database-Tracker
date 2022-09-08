@@ -21,18 +21,23 @@ const initialQuestions = [
     }
 ];
 
+//This function is what starts entire program, and does not stop unless user specifies all finished option
 function initialQuestion() {
     inquirer.prompt(initialQuestions).then(response => { viewTables(response) })
 }
 initialQuestion();
 
+//Function to handle what happens based on user input of first question
 function viewTables(response) {
     if (response.choice === 'View All Departments') {
         db.query(`SELECT * FROM department`, (err, results) => {
-            console.table(results);
-            initialQuestion();
+            if (err) {
+                console.log(err);
+            } else if (results) {
+                console.table(results);
+                initialQuestion();
+            }
         })
-
     } else if (response.choice === 'View All Roles') {
         db.query(`SELECT * FROM role`, (err, results) => {
             console.table(results);
@@ -57,14 +62,21 @@ function viewTables(response) {
     }
 };
 
+//Function for adding a department name to sql table department
 async function addDepartment() {
     await inquirer.prompt([{ type: 'input', message: 'Department Name: ', name: 'departmentName' }]).then(response => {
-        console.log('Department Sucessfully Added');
-        db.query(`INSERT INTO department (department_name) VALUES (?)`, response.departmentName, (err, result) => { });
+        db.query(`INSERT INTO department (department_name) VALUES (?)`, response.departmentName, (err, result) => { 
+            if (err) {
+                console.log(err);
+            } else if (result) {
+                console.log(`${response.departmentName} successfully added`)
+            }
+        });
     });
     initialQuestion();
 }
 
+//Function for adding a role to table role
 async function addRole() {
     let departmentArray = [];
     let departmentObjectArray = [];
@@ -92,41 +104,42 @@ async function addRole() {
             choices: departmentArray,
         }
     ]).then(response => {
-        console.log('Role Successfully Added');
-        // console.log(departmentObjectArray);
-        // console.log(response.roleDepartment)
-        // console.log(departmentObjectArray[0].department_name);
+        //Getting role_id from user input from department to add to sql insert query
         let roleId;
         for (i = 0; i < departmentObjectArray.length; i++) {
             if (departmentObjectArray[i].department_name === response.roleDepartment) {
                 roleId = departmentObjectArray[i].id;
             }
         }
-        // console.log(roleId);
-        // console.log(response.roleName);
-        // console.log(response.salaryRole);
-        db.query(`INSERT INTO role (title, salary, department_name, department_id) VALUES (?, ${response.salaryRole}, ${JSON.stringify(response.roleDepartment)}, ${roleId})`, response.roleName, (err, res) => { console.log(err); });
+        db.query(`INSERT INTO role (title, salary, department_name, department_id) VALUES (?, ${response.salaryRole}, ${JSON.stringify(response.roleDepartment)}, ${roleId})`, response.roleName, (err, res) => { 
+            if (err) {
+                console.log(err);
+            } else if (res) {
+                console.log(`${response.roleName} successfully added`)
+            }
+        });
     });
     initialQuestion();
 }
 
+//Function for adding new employee
 async function addEmployee() {
+    //Storing current roles in arrays to use when adding employee to database
     let departmentArray = [];
     let departmentObjectArray = [];
     db.query(`SELECT * FROM role`, (err, results) => {
-        // console.log(results);
         for (i = 0; i < results.length; i++) {
             departmentArray.push(results[i].title);
             departmentObjectArray.push(results[i]);
         }
     });
+
+    //Storing all current employees in arrays and filtering by manager name for use when adding employee to database
     let employeeArray = [];
     let managerArray = ['None'];
     let employeeObjectArray = [];
     let employeeObjectArraySimple;
-    // let employeeObjectArraySimple2 = [];
     db.query(`SELECT * FROM employee`, (err, results) => {
-        // console.log(results);
         for (i = 0; i < results.length; i++) {
             employeeArray.push(results[i].manager_name);
             employeeObjectArray.push(results);
@@ -142,13 +155,7 @@ async function addEmployee() {
                 employeeObjectArraySimple.push(element);
             }
         })
-        // employeeObjectArraySimple.forEach(element => {
-        //     if (!employeeObjectArraySimple2.includes(element)) {
-        //         employeeObjectArraySimple2.push(element);
-        //     }
-        // })
     });
-    // console.log(managerArray);
     await inquirer.prompt([
         {
             type: 'input',
@@ -173,7 +180,7 @@ async function addEmployee() {
             name: 'manager',
         }
     ]).then(response => {
-        // console.log(departmentArray);
+        //Getting info based on user input for sql insertion
         let roleId;
         let salary;
         let title;
@@ -199,78 +206,17 @@ async function addEmployee() {
         }
 
         db.query(`INSERT INTO employee (first_name, last_name, title, salary, role_id, department, manager_name, manager_id) VALUES (?, ${JSON.stringify(response.last_name)}, ${JSON.stringify(title)}, ${salary}, ${roleId}, ${JSON.stringify(department)}, ${JSON.stringify(response.manager)}, ${manager_id})`, response.first_name, (err, result) => {
-            console.log(err);
+            if (err) {
+                console.log(err);
+            } else if (result) {
+                 console.log(`${response.first_name} ${response.last_name} successfully added`);
+            }
         })
     });
     initialQuestion();
 }
 
-// async function updateEmployee() {
-//     // let goose = [];
-//     let employee = new Promise((resolve, reject) => {
-//         db.query(`SELECT * FROM employee`, (err, results) => {
-//             resolve(results);
-//         });
-//     });
-//     employee.then((results) => {
-//         console.log(results);
-//         let goose = [];
-//         for (i = 0; i < results.length; i++) {
-//             goose.push(results[i].title);
-//         }
-//         return goose;
-//     });
-// console.log(goose);
-// let allEmployeeArray = [];
-// let goose;
-// db.query(`SELECT * FROM employee`, (err, results) => {
-//     // console.log(results);
-//     for (i = 0; i < results.length; i++) {
-//         let first_name = results[i].first_name;
-//         let last_name = results[i].last_name;
-//         let full_name = first_name + ' ' + last_name;
-//         allEmployeeArray.push(full_name);
-//     }
-//     // console.log(allEmployeeArray);
-// });
-// // console.log(goose);
-
-// let roleArray = [];
-
-// db.query(`SELECT * FROM role`, (err, results) => {
-//     // console.log(results);
-//     for (i = 0; i < results.length; i++) {
-//         roleArray.push(results[i].title);
-//     }
-//     // console.log(roleArray);
-// });
-// console.log(managerArray);
-// const departmentArray = await addEmplyeeArray()
-// await inquirer.prompt([
-//     {
-//         type: 'list',
-//         message: "Which employee's role do you want to update? ",
-//         choices: departmentArray,
-//         name: 'employee',
-//     },
-//     {
-//         type: 'list',
-//         message: "Which role do you want to assign the selected employee? ",
-//         choices: [1, 2, 3],
-//         name: 'role',
-//     },
-// ]).then(response => {
-//     console.log(response.employee);
-//     console.log(response.role);
-
-//     // db.query(`Update employee Set title = salary = department_name = department_id = WHERE id = `, (err, result) => {
-
-//     // });
-// });
-// initialQuestion();
-// }
-// updateEmployee();
-
+//Function to turn db.query into a function so that we can use await on it
 async function query(string) {
     return new Promise((resolve, reject) => {
         db.query(string, (err, results) => {
@@ -279,13 +225,11 @@ async function query(string) {
     });
 }
 
-// async function whatever() {
-//     const employees = await queryEmployees();
-//     const departments = await queryDepartments();
-//     await prompt
-// }
-
 async function updateEmployee() {
+    //Here query() is doing the same thing as db.query, but is now an independent function so can use await and arrays will
+    //be populated and ready for when inquirer calls them a few lines down
+
+    //Getting all employee names in first and last format into one array for use later in sql database
     const results = await query(`SELECT * FROM employee`);
     let employeeNameArray = [];
     let employeeArray = [];
@@ -299,6 +243,7 @@ async function updateEmployee() {
         employeeArray.push(results[i]);
     }
 
+    //Getting all current roles and titles in arrays for use later in sql database
     const roles = await query(`SELECT * FROM role`);
     let roleArray = [];
     let allRoleArray = [];
@@ -306,8 +251,6 @@ async function updateEmployee() {
         roleArray.push(roles[i].title);
         allRoleArray.push(roles[i]);
     }
-    // console.log(employeeArray);
-    // console.log(roleArray);
     await inquirer.prompt([
         {
             type: 'list',
@@ -322,36 +265,27 @@ async function updateEmployee() {
             name: 'role',
         },
     ]).then(response => {
-        // console.log(response.employee);
-        // console.log(response.role);
-        // console.log(employeeArray);
+        //Comparing user input name to names in database and choosing the employee that matches
         let splitName = response.employee.split(' ');
         let splitName1 = splitName[0];
         let splitName2 = splitName[1];
-        // console.log(splitName1);
-        // console.log(splitName2);
         let employeeId;
         for (i = 0; i < employeeArray.length; i++) {
             if (employeeArray[i].first_name === splitName1 && employeeArray[i].last_name === splitName2) {
                 employeeId = employeeArray[i].id;
             }
         }
-        // console.log(employeeId);
-        // console.log(allRoleArray);
+        //Comparing user input role title to database role titles and grabbing all associated information about role for sql database
         let depName;
-        // let depId;
         let salary;
         let roleId;
         for (i = 0; i < allRoleArray.length; i++) {
             if (response.role === allRoleArray[i].title) {
                 depName = allRoleArray[i].department_name;
-                // depId = allRoleArray[i].department_id;
                 salary = allRoleArray[i].salary;
                 roleId = allRoleArray[i].id;
             }
         }
-        //title = response.role, salary = salary, department_name = depName, department_id = depId, id = employeeId
-        console.log(`New employee Update: ${JSON.stringify(response.role)}, ${salary}, ${roleId}, ${JSON.stringify(depName)}, ${employeeId}`);
 
         db.query(`UPDATE employee SET title = ${JSON.stringify(response.role)}, salary = ${salary}, role_id = ${roleId}, department = ${JSON.stringify(depName)} WHERE id = ${employeeId};`, (err, result) => {
             if (err) {
@@ -364,44 +298,3 @@ async function updateEmployee() {
     });
     initialQuestion();
 }
-// allEmployeeArray();
-
-// (async function () {
-//     var goose = await allEmployeeArray();
-//     console.log(goose);
-// })();
-
-
-// let roleArray = [];
-// db.query(`SELECT * FROM role`, (err, results) => {
-//     for (i = 0; i < results.length; i++) {
-//         roleArray.push(results[i].title);
-//     }
-//     // console.log(roleArray);
-// });
-// // console.log(roleArray);
-
-// let departmentArray = [];
-// let departmentObjectArray = [];
-// db.query(`SELECT * FROM role`, (err, results) => {
-//     // console.log(results);
-//     for (i = 0; i < results.length; i++) {
-//         departmentArray.push(results[i].title);
-//         departmentObjectArray.push(results[i]);
-//     }
-//     // console.log(departmentArray);
-// });
-// console.log(departmentArray);
-// let testingArray = [];
-// async function testing() {
-//     // let testingArray = [];
-//     db.query(`SELECT * FROM department`, (err, results) => {
-//         for (i = 0; i < results.length; i++) {
-//             testingArray.push(results[i].department_name);
-//         }
-//         return testingArray;
-//     });
-// }
-// const goose = testing();
-// console.log(goose);
-// updateEmployee();

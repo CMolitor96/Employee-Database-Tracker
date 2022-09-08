@@ -14,7 +14,7 @@ Project Description
 [Questions](#questions)
 
 ## Project Install:
-Project installation instructions
+Simply clone this repository onto your local machine. Make sure to hook up your MYSQL login info, login, and source the two database files, or else program will not work. In the server.js file download the necessary dependencies with node and run the server.js file with node. The program will run through its entirety from there. 
 
 
 
@@ -24,7 +24,14 @@ Please click the license badge for more information on the license under which t
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Project Usage:
-Project usage information
+After running npm i to download dependencies, and logging into MYSQL and sourcing the database files, simply type into the root directory command line node server.js and the project will begin. Immediately a prompt will be shown, simply use your arrow keys to navigate through and choose an option, and follow the subsequent prompts until you are done with the application and choose all finished.
+
+Picture of starting application:
+
+
+Picture of all prompts with show all departments chosen:
+
+
 
 
 ## Questions:
