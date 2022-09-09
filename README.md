@@ -26,7 +26,9 @@ Please click the license badge for more information on the license under which t
 ## Project Usage:
 After running npm i to download dependencies, and logging into MYSQL and sourcing the database files, simply type into the root directory command line node server.js and the project will begin. Immediately a prompt will be shown, simply use your arrow keys to navigate through and choose an option, and follow the subsequent prompts until you are done with the application and choose all finished.
 
+
 Picture of starting application:
+
 <img width="535" alt="Screen Shot 2022-09-08 at 4 13 13 PM" src="https://user-images.githubusercontent.com/103666997/189247110-504971a2-f77e-4244-b628-918e51ac8921.png">
 
 
